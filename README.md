@@ -4,7 +4,7 @@
 > index, perform spatial analysis, and compress data.
 
 The visualization of quadtree is displayed as following:
-![](./imgs/quadtree_demo_1.jpg)
+![](https://github.com/Vezarachan/quadtree-py/blob/master/imgs/quadtree_demo_1.jpg)
 ## Usage
 ```python
 from quadtree import QuadTree, Bounds, Point
