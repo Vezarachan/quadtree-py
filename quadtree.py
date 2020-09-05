@@ -301,6 +301,11 @@ class QuadTree(object):
         pass
 
     def visualize(self, size=15):
+        """
+        visualize all the objects and nodes
+        :param size:
+        :return:
+        """
         from matplotlib import pyplot as plt
         from matplotlib import patches
 
