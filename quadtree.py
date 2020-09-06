@@ -17,30 +17,43 @@ class Point(object):
         self.data = data
 
     def __repr__(self):
-        return "<Point: ({0}, {1})>".format(self.x, self.y)
+        return '<Point: ({0},{1})>'.format(self.x, self.y)
 
     def __eq__(self, other):
         return self.x == other.x and self.y == other.y
 
 
 class Bounds(object):
+    """
+    BoundingBox
+    """
     x: float
     y: float
     width: float
     height: float
-    value: Any
 
     def __init__(self, x: float, y: float, width: float = 0, height: float = 0):
         self.x = x
         self.y = y
         self.width = width
         self.height = height
+
+    def __repr__(self):
+        xmin, xmax, ymin, ymax = self.get_bbox()
+        return '<Bounds: [{0},{1},{2},{3}]>'.format(xmin, xmax, ymin, ymax)
+
+    def get_bbox(self):
+        """
+        retuen bbox: xmin, xmax, ymin, ymax
+        :return List[int]:
+        """
+        return [self.x, self.x + self.width, self.y, self.y + self.height]
         
     def intersects(self, other):
         """
            Check is self Bounds intersects with another Bounds
            :param self:
-           :param another:
+           :param other:
            :return: bool
            """
         self_xmin = self.x
@@ -67,7 +80,13 @@ class Bounds(object):
         return True
 
 
-def euclid_distance(one: Bounds, another: Bounds) -> float:
+def euclid_distance(one: Bounds, another: Union[Bounds, Point]) -> float:
+    """
+    calculate the euclid distance between two points or Bounds
+    :param one:
+    :param another:
+    :return float:
+    """
     return math.sqrt((one.x - another.x)**2 + (one.y - another.y)**2)
 
 
@@ -251,7 +270,7 @@ class QuadTree(object):
                     return_objects.append(self.__nodes[i].retrieve(bounds))
         return return_objects
 
-    def retrieve_intersections(self, bounds: Union[Bounds, Point]) -> List[Union[Bounds]]:
+    def retrieve_intersections(self, bounds: Union[Bounds, Point]) -> List[Union[Bounds, Point]]:
         """
         get all objects in all nodes that intersect with given object
         :param bounds:
