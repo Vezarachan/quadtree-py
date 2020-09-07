@@ -14,8 +14,14 @@ class QuadTreeFunctionTest(unittest.TestCase):
         for point in points:
             self.quadtree.insert(Point(point['x'], point['y'], point['value']))
 
+    def test_retrieve(self):
+        objects = self.quadtree.retrieve(Bounds(200, 200, 50, 50))
+
     def test_retrieve_intersections(self):
-        self.quadtree.retrieve_intersections(Bounds(320, 49, 5, 5))
+        objects = self.quadtree.retrieve_intersections(Bounds(200, 200, 50, 50))
+
+    def test_nearest_neighbors(self):
+        points = self.quadtree.nearest_neighbors(Point(225, 225), radius=25)
 
     def test_visualization(self):
         self.quadtree.visualize()

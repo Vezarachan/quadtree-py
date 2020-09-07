@@ -79,15 +79,41 @@ class Bounds(object):
             return False
         return True
 
+    def contain_point(self, point: Point):
+        self_xmin = self.x
+        self_xmax = self.x + self.width
+        self_ymin = self.y
+        self_ymax = self.y + self.height
 
-def euclid_distance(one: Bounds, another: Union[Bounds, Point]) -> float:
+        if point.x < self_xmin:
+            return False
+        if point.x > self_xmax:
+            return False
+        if point.y < self_ymin:
+            return False
+        if point.y > self_ymax:
+            return False
+        return True
+
+
+def euclid_compare(one: Union[Bounds, Point], another: Union[Bounds, Point]) -> float:
+    """
+    speed up comparison
+    :param one:
+    :param another:
+    :return:
+    """
+    return (one.x - another.x)**2 + (one.y - another.y)**2
+
+
+def euclid_distance(one: Union[Bounds, Point], another: Union[Bounds, Point]) -> float:
     """
     calculate the euclid distance between two points or Bounds
     :param one:
     :param another:
     :return float:
     """
-    return math.sqrt((one.x - another.x)**2 + (one.y - another.y)**2)
+    return math.sqrt(euclid_compare(one, another))
 
 
 class QuadTree(object):
@@ -262,15 +288,15 @@ class QuadTree(object):
         index = self.get_index(bounds)
         return_objects = self.__objects
 
-        if self.__nodes:
+        if not self.__is_leaf():
             if index != -1:
-                return_objects.append(self.__nodes[index].retrieve(bounds))
+                return_objects.extend(self.__nodes[index].retrieve(bounds))
             else:
                 for i in range(len(self.__nodes)):
-                    return_objects.append(self.__nodes[i].retrieve(bounds))
+                    return_objects.extend(self.__nodes[i].retrieve(bounds))
         return return_objects
 
-    def retrieve_intersections(self, bounds: Union[Bounds, Point]) -> List[Union[Bounds, Point]]:
+    def retrieve_intersections(self, bounds: Union[Bounds]) -> List[Union[Bounds, Point]]:
         """
         get all objects in all nodes that intersect with given object
         :param bounds:
@@ -279,8 +305,12 @@ class QuadTree(object):
         found_bounds = []
         potentials: List[Union[Bounds, Point]] = self.retrieve(bounds)
         for i in range(len(potentials)):
-            if bounds.intersects(potentials[i]):
-                found_bounds.append(potentials[i])
+            if isinstance(potentials[0], Bounds):
+                if bounds.intersects(potentials[i]):
+                    found_bounds.append(potentials[i])
+            if isinstance(potentials[0], Point):
+                if bounds.contain_point(potentials[i]):
+                    found_bounds.append(potentials[i])
         return found_bounds
 
     def find(self, bounds: Union[Bounds, Point]) -> List[int]:
@@ -309,15 +339,24 @@ class QuadTree(object):
                 return True
         return False
 
-    def neighbors(self, point: Point, radius: float, max_num: int = 10) -> List:
+    def nearest_neighbors(self, point: Point, radius: float, max_num: int = 10, search_type: str = 'rectangle') -> List[Point]:
         """
         find out neighboring points
         :param point:
         :param radius:
         :param max_num:
-        :return List:
+        :param search_type:
+        :return List[Point]:
         """
-        pass
+        nearest_results = []
+        search_results = []
+        if search_type == 'rectangle':
+            bounds = Bounds(point.x - radius, point.y - radius, radius * 2, radius * 2)
+            search_results.extend(self.retrieve_intersections(bounds))
+        elif search_type == 'circle':
+            pass
+        nearest_results.extend(sorted(search_results, key=lambda another: euclid_compare(point, another)))
+        return nearest_results[:max_num]
 
     def visualize(self, size=15):
         """
