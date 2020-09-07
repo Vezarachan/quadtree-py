@@ -362,13 +362,14 @@ class QuadTree(object):
         """
         visualize all the objects and nodes
         :param size:
-        :return:
+        :return None:
         """
         from matplotlib import pyplot as plt
         from matplotlib import patches
 
         fig, ax = plt.subplots(1, 1, figsize=(size, size))
 
+        # draw all the points and rectangles in the nodes
         def draw_all_nodes(node):
             if node.__is_leaf():
                 for point in node.__objects:
@@ -379,6 +380,7 @@ class QuadTree(object):
                     draw_rect(node.__nodes[i])
                     draw_all_nodes(node.__nodes[i])
 
+        # draw the boundingbox of nodes
         def draw_rect(node):
             ax.add_patch(patches.Rectangle((node.__bounds.x, node.__bounds.y), node.__bounds.width, node.__bounds.height, edgecolor='grey', linewidth=0.5, fill=False))
 
@@ -387,6 +389,8 @@ class QuadTree(object):
                   self.__bounds.y,
                   self.__bounds.y + self.__bounds.height])
         draw_all_nodes(self)
+        # save img
         # plt.savefig(os.path.abspath(os.curdir) + '/imgs/quadtree_demo_1.jpg')
+        plt.title('QuadTree -- size: {0}x{1}'.format(self.__bounds.width, self.__bounds.height))
         plt.show()
 
