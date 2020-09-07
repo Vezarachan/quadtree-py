@@ -39,6 +39,7 @@ if __name__ == '__main__':
 ## Current Projects
 - **quadtree-py** - A quadtree implementation in pure Python
 - **cocopulas** - A Python lib for copulas (elliptical, archimedean copulas)
+- **map_spider** - A spider searching for POI and streetview from Amap and Bmap
 
 ## Next Projects
 - **KD-Tree** - The k-dimensional tree implementation in Python
